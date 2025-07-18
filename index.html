@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
-  <title>Jogo da Ana - Coração com Tijolos</title>
+  <title>Jogo da Ana - Coração com Tijolos e Emojis</title>
   <style>
     body {
       margin: 0;
@@ -17,55 +17,108 @@
       border: 2px solid #000;
       box-sizing: border-box;
     }
+    #info {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-weight: bold;
+      font-size: 18px;
+      color: #000;
+      background: rgba(255, 255, 255, 0.8);
+      padding: 6px 10px;
+      border-radius: 12px;
+      user-select: none;
+      z-index: 10;
+    }
   </style>
 </head>
 <body>
+  <div id="info">Pontuação: 0 | Recorde: 0</div>
   <canvas id="gameCanvas" width="400" height="600"></canvas>
 
   <script>
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
+    const info = document.getElementById("info");
 
-    // Layout do coração: 1 = desenha tijolo, 0 = vazio
+    // Layout do coração (mais cheio e arredondado)
     const heartLayout = [
-      "0011110111100",
-      "0111111111110",
-      "1111111111111",
-      "1111111111111",
-      "1111111111111",
-      "0111111111110",
-      "0011111111100",
-      "0001111111000",
-      "0000111100000",
-      "0000011000000"
+      "001111111111100",
+      "011111111111110",
+      "111111111111111",
+      "111111111111111",
+      "111111111111111",
+      "011111111111110",
+      "001111111111100",
+      "000111111111000",
+      "000011111110000",
+      "000001111100000",
+      "000000111000000",
+      "000000010000000",
     ];
 
-    const brickWidth = 30;
+    const brickWidth = 24;
     const brickHeight = 20;
-    const brickPadding = 4;
+    const brickPadding = 3;
     const offsetX = (canvas.width - (brickWidth + brickPadding) * heartLayout[0].length) / 2;
-    const offsetY = 50;
+    const offsetY = 40;
 
-    function drawHeart() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = "#ff69b4"; // rosa tijolo
+    // Dados para pontuação
+    let score = 0;
+    let highScore = localStorage.getItem("highScoreAna") || 0;
+    info.textContent = `Pontuação: ${score} | Recorde: ${highScore}`;
 
-      for (let r = 0; r < heartLayout.length; r++) {
-        for (let c = 0; c < heartLayout[r].length; c++) {
-          if (heartLayout[r][c] === "1") {
-            const x = offsetX + c * (brickWidth + brickPadding);
-            const y = offsetY + r * (brickHeight + brickPadding);
-            ctx.fillRect(x, y, brickWidth, brickHeight);
-            // opcional: desenhar borda preta para destacar tijolos
-            ctx.strokeStyle = "#000";
-            ctx.strokeRect(x, y, brickWidth, brickHeight);
-          }
-        }
+    // Array para armazenar tijolos (x, y, status)
+    let bricks = [];
+    for (let r = 0; r < heartLayout.length; r++) {
+      bricks[r] = [];
+      for (let c = 0; c < heartLayout[r].length; c++) {
+        bricks[r][c] = {
+          x: 0,
+          y: 0,
+          status: heartLayout[r][c] === "1" ? 1 : 0
+        };
       }
     }
 
-    drawHeart();
+    // Função para desenhar tijolos rosa com emoji coração dentro
+    function drawBricks() {
+      bricks.forEach((row, r) => {
+        row.forEach((b, c) => {
+          if (b.status === 1) {
+            const x = offsetX + c * (brickWidth + brickPadding);
+            const y = offsetY + r * (brickHeight + brickPadding);
+            b.x = x;
+            b.y = y;
+
+            // Tijolo rosa
+            ctx.fillStyle = "#ff69b4";
+            ctx.fillRect(x, y, brickWidth, brickHeight);
+
+            // Borda preta para destacar tijolo
+            ctx.strokeStyle = "#000";
+            ctx.lineWidth = 1;
+            ctx.strokeRect(x, y, brickWidth, brickHeight);
+
+            // Emoji coração preto dentro do tijolo (centralizado)
+            ctx.fillStyle = "#000";
+            ctx.font = "16px Arial";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText("❤️", x + brickWidth / 2, y + brickHeight / 2 + 1);
+          }
+        });
+      });
+    }
+
+    // Só desenhar os tijolos por enquanto
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawBricks();
+      requestAnimationFrame(draw);
+    }
+
+    draw();
   </script>
 </body>
 </html>
-
