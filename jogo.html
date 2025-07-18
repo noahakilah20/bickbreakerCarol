@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>Jogo da Ana</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+      background: #000;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    #gameCanvas {
+      display: block;
+      margin: 0 auto;
+      background-color: transparent;
+      position: relative;
+      z-index: 1;
+      border: 3px solid #0066cc; /* destaque azul da mesa */
+      background-size: cover;
+      background-position: center;
+    }
+
+    #info {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      color: black;
+      font-size: 20px;
+      font-weight: bold;
+      text-shadow: 1px 1px 2px white;
+      z-index: 10;
+    }
+
+    #highScore {
+      margin-left: 20px;
+      color: black;
+      font-weight: bold;
+      text-shadow: 1px 1px 2px white;
+    }
+
+    #finalMsg {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 30px;
+      color: #ff1493;
+      display: none;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.85);
+      padding: 25px 40px;
+      border-radius: 20px;
+      font-weight: bold;
+      box-shadow: 0 0 20px #ff1493;
+      z-index: 20;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="gameCanvas" width="420" height="600"></canvas>
+
+  <div id="info">
+    Pontuação: <span id="score">0</span> 
+    <span id="highScore">Recorde: 0</span>
+  </div>
+
+  <div id="finalMsg">❤️ você é incrível<br>Ana Carollina Souza ❤️</div>
+
+  <script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+
+    // Fundo psicologia + mesa azul
+    const bgImage = new Image();
+    bgImage.src = "https://harikacocuklarizmir.com/images/uploads/2dc834e1801c5d89034a2b8454d42ce8.jpg";
+
+    // Mesa azul (borda e faixa inferior)
+    function drawMesaAzul() {
+      // faixa inferior
+      ctx.fillStyle = "#004080";
+      ctx.fillRect(0, canvas.height - 30, canvas.width, 30);
+      // borda é do canvas (estilo CSS), mas reforça aqui:
+      ctx.strokeStyle = "#0066cc";
+      ctx.lineWidth = 5;
+      ctx.strokeRect(0, 0, canvas.width, canvas.height);
+    }
+
+    // Bola rosa, mas agora temos array para múltiplas bolas
+    const ballRadius = 7;
+
+    let balls = [{
+      x: canvas.width / 2,
+      y: canvas.height - 40,
+      dx: 3,
+      dy: -3,
+    }];
+
+    // Paddle (barra)
+    const paddleWidth = 80;
+    const paddleHeight = 12;
+    let paddleX = (canvas.width - paddleWidth) / 2;
+
+    // Tijolos coração
+    const brickRowCount = 9;
+    const brickColumnCount = 7;
+    const brickWidth = 40;
+    const brickHeight = 20;
+    const brickPadding = 5;
+    const brickOffsetTop = 60;
+    const brickOffsetLeft = 30;
+
+    let bricks = [];
+
+    // Layout coração 9x7 (1=tem tijolo)
+    const heartPattern = [
+      "0111011",
+      "11
