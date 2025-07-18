@@ -2,21 +2,20 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
-  <title>Jogo da Ana Carollina Souza</title>
+  <title>Jogo da Aninha ❤️</title>
   <style>
     body {
       margin: 0;
       overflow: hidden;
       font-family: Arial, sans-serif;
-      touch-action: none;
       background: #fff;
+      user-select: none;
     }
     #gameCanvas {
       display: block;
       margin: 0 auto;
-      background-color: #fff;
-      border: 2px solid #000;
-      box-sizing: border-box;
+      border: 2px solid black;
+      background: #fff;
       position: relative;
       z-index: 1;
     }
@@ -24,57 +23,50 @@
       position: absolute;
       top: 10px;
       left: 10px;
-      color: #000;
-      font-size: 18px;
       font-weight: bold;
-      background: rgba(255, 255, 255, 0.85);
+      font-size: 18px;
+      z-index: 20;
+      background: rgba(255, 255, 255, 0.9);
       padding: 8px 14px;
-      border-radius: 14px;
-      z-index: 10;
-      user-select: none;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      border-radius: 12px;
     }
     #finalMsg {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      font-size: 28px;
-      color: #000;
-      display: none;
-      text-align: center;
-      background: rgba(255, 192, 203, 0.95);
-      padding: 30px 50px;
-      border-radius: 25px;
+      font-size: 30px;
       font-weight: bold;
-      user-select: none;
-      box-shadow: 0 0 20px #ff69b4;
-      z-index: 20;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #ffc0cbcc;
+      border-radius: 20px;
+      padding: 20px 40px;
+      display: none;
+      z-index: 50;
+      text-align: center;
+      box-shadow: 0 0 15px #ff69b4;
     }
-    /* Estilos para animação dos textos que aparecem */
     .floatingText {
       position: absolute;
       font-weight: bold;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       pointer-events: none;
       user-select: none;
       white-space: nowrap;
-      z-index: 15;
       animation: floatUp 1.5s forwards;
+      z-index: 30;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
     .pointsText {
-      color: #ff69b4;
-      font-size: 18px;
-      text-shadow: 1px 1px 3px #000;
+      color: #ff1493;
+      font-size: 20px;
+      text-shadow: 1px 1px 2px #000;
     }
     .praiseText {
+      background: #ffb6c1cc;
+      padding: 4px 14px;
+      border-radius: 14px;
       color: #000;
-      font-size: 20px;
-      background: #ffb6c1aa;
-      padding: 4px 10px;
-      border-radius: 10px;
-      box-shadow: 0 0 8px #ff69b4;
+      font-size: 22px;
+      box-shadow: 0 0 8px #ff1493;
     }
     @keyframes floatUp {
       0% {
@@ -89,187 +81,284 @@
   </style>
 </head>
 <body>
-  <canvas id="gameCanvas" width="400" height="600"></canvas>
+
   <div id="info">
     Pontuação: <span id="score">0</span> | Recorde: <span id="highScore">0</span>
   </div>
+
   <div id="finalMsg">❤️ Você é incrível Ana Carollina Souza ❤️</div>
 
-  <script>
-    const canvas = document.getElementById("gameCanvas");
-    const ctx = canvas.getContext("2d");
-    const scoreSpan = document.getElementById("score");
-    const highScoreSpan = document.getElementById("highScore");
-    const finalMsgDiv = document.getElementById("finalMsg");
+  <canvas id="gameCanvas" width="400" height="600"></canvas>
 
-    // Fundo com sua imagem
-    const bgImage = new Image();
-    bgImage.src = "https://harikacocuklarizmir.com/images/uploads/2dc834e1801c5d89034a2b8454d42ce8.jpg";
+<script>
+  const canvas = document.getElementById("gameCanvas");
+  const ctx = canvas.getContext("2d");
 
-    // Bola(s) rosa
-    const ballRadius = 7;
-    let balls = [
-      { x: canvas.width / 2, y: canvas.height - 50, dx: 3, dy: -3 }
-    ];
+  const scoreSpan = document.getElementById("score");
+  const highScoreSpan = document.getElementById("highScore");
+  const finalMsgDiv = document.getElementById("finalMsg");
 
-    // Barra azul clara
-    const paddleWidth = 80;
-    const paddleHeight = 10;
-    let paddleX = (canvas.width - paddleWidth) / 2;
+  // Fundo imagem
+  const bgImage = new Image();
+  bgImage.src = "https://harikacocuklarizmir.com/images/uploads/2dc834e1801c5d89034a2b8454d42ce8.jpg";
 
-    // Layout coração 15x15 (maior que o anterior para um coração grande)
-    const heartLayout = [
-      "000001111110000",
-      "000111111111000",
-      "001111111111100",
-      "011111111111110",
-      "011111111111110",
-      "111111111111111",
-      "111111111111111",
-      "111111111111111",
-      "011111111111110",
-      "001111111111100",
-      "000111111111000",
-      "000011111110000",
-      "000001111100000",
-      "000000111000000",
-      "000000010000000"
-    ];
-    const brickRowCount = heartLayout.length;
-    const brickColumnCount = heartLayout[0].length;
-    const brickWidth = 22;
-    const brickHeight = 18;
-    const brickPadding = 4;
-    const brickOffsetTop = 40;
-    const brickOffsetLeft = 14;
+  // Bola rosa
+  const ballRadius = 7;
+  let ball = {
+    x: canvas.width / 2,
+    y: canvas.height - 60,
+    dx: 3,
+    dy: -3,
+    radius: ballRadius,
+  };
 
-    // Criar tijolos
-    let bricks = [];
-    function makeHeartLayout() {
-      for (let r = 0; r < brickRowCount; r++) {
-        bricks[r] = [];
-        for (let c = 0; c < brickColumnCount; c++) {
-          bricks[r][c] = {
-            x: 0,
-            y: 0,
-            status: heartLayout[r][c] === "1" ? 1 : 0
-          };
+  // Barra azul clara
+  const paddleWidth = 80;
+  const paddleHeight = 10;
+  let paddleX = (canvas.width - paddleWidth) / 2;
+
+  // Coração: layout do coração (15x15) com '1' = tijolo
+  const heartLayout = [
+    "000001111110000",
+    "000111111111000",
+    "001111111111100",
+    "011111111111110",
+    "011111111111110",
+    "111111111111111",
+    "111111111111111",
+    "111111111111111",
+    "011111111111110",
+    "001111111111100",
+    "000111111111000",
+    "000011111110000",
+    "000001111100000",
+    "000000111000000",
+    "000000010000000"
+  ];
+  const brickRowCount = heartLayout.length;
+  const brickColumnCount = heartLayout[0].length;
+
+  const brickWidth = 22;
+  const brickHeight = 18;
+  const brickPadding = 4;
+  const brickOffsetTop = 40;
+  const brickOffsetLeft = 14;
+
+  // Criar matriz de tijolos
+  let bricks = [];
+  function createBricks() {
+    for(let r=0; r < brickRowCount; r++) {
+      bricks[r] = [];
+      for(let c=0; c < brickColumnCount; c++) {
+        bricks[r][c] = {
+          x: 0,
+          y: 0,
+          status: heartLayout[r][c] === "1" ? 1 : 0
         }
       }
     }
-    makeHeartLayout();
+  }
+  createBricks();
 
-    // Pontuação e recorde
-    let score = 0;
-    let highScore = localStorage.getItem("highScoreAna") || 0;
-    highScore = Number(highScore);
-    highScoreSpan.textContent = highScore;
-    const totalBricks = bricks.flat().filter(b => b.status === 1).length;
+  // Pontuação e recorde
+  let score = 0;
+  let highScore = Number(localStorage.getItem("highScoreAna")) || 0;
+  highScoreSpan.textContent = highScore;
+  const totalBricks = bricks.flat().filter(b => b.status === 1).length;
 
-    // Lista elogios (frases fofas para Aninha)
-    const praises = [
-      "Aninha, você é incrível! 💖",
-      "Aninha, arrasou! 🌟",
-      "Aninha, show de bola! ⚽",
-      "Aninha, maravilhosa! ✨",
-      "Aninha, continue brilhando! 💫",
-      "Aninha, parabéns! 🎉",
-      "Aninha, talento puro! 🎶",
-      "Aninha, que linda! 🌷",
-      "Aninha, sensacional! 🚀"
-    ];
+  // Frases fofas para Aninha a cada 5 pontos
+  const praises = [
+    "Aninha, você é incrível! 💖",
+    "Aninha, arrasou! 🌟",
+    "Aninha, show de bola! ⚽",
+    "Aninha, maravilhosa! ✨",
+    "Aninha, continue brilhando! 💫",
+    "Aninha, parabéns! 🎉",
+    "Aninha, talento puro! 🎶",
+    "Aninha, que linda! 🌷",
+    "Aninha, sensacional! 🚀"
+  ];
 
-    // Para animar textos +1 e elogios
-    function showFloatingText(text, x, y, isPraise = false) {
-      const div = document.createElement("div");
-      div.className = "floatingText " + (isPraise ? "praiseText" : "pointsText");
-      div.textContent = text;
-      div.style.left = (canvas.offsetLeft + x) + "px";
-      div.style.top = (canvas.offsetTop + y) + "px";
-      document.body.appendChild(div);
-      setTimeout(() => div.remove(), 1500);
+  // Mostrar textos flutuantes +1 e elogios
+  function showFloatingText(text, x, y, isPraise = false) {
+    const div = document.createElement("div");
+    div.className = "floatingText " + (isPraise ? "praiseText" : "pointsText");
+    div.textContent = text;
+    div.style.left = (canvas.offsetLeft + x) + "px";
+    div.style.top = (canvas.offsetTop + y) + "px";
+    document.body.appendChild(div);
+    setTimeout(() => div.remove(), 1500);
+  }
+
+  // Desenhar fundo
+  function drawBackground() {
+    if (bgImage.complete && bgImage.naturalWidth !== 0) {
+      ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
+    } else {
+      ctx.fillStyle = "#fff";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
+  }
 
-    // Desenha o fundo
-    function drawBackground() {
-      if (bgImage.complete && bgImage.naturalWidth !== 0) {
-        ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
-      } else {
-        ctx.fillStyle = "#fff";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+  // Desenhar mesa azul clara na base
+  function drawMesaAzul() {
+    ctx.fillStyle = "#87CEFA";
+    ctx.fillRect(0, canvas.height - 60, canvas.width, 60);
+  }
+
+  // Desenhar tijolos com coração preto dentro
+  function drawBricks() {
+    bricks.forEach((row, r) => {
+      row.forEach((b, c) => {
+        if (b.status === 1) {
+          b.x = c * (brickWidth + brickPadding) + brickOffsetLeft;
+          b.y = r * (brickHeight + brickPadding) + brickOffsetTop;
+
+          ctx.fillStyle = "#ff69b4";
+          ctx.fillRect(b.x, b.y, brickWidth, brickHeight);
+
+          ctx.fillStyle = "#000";
+          ctx.font = "16px Arial";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText("❤️", b.x + brickWidth / 2, b.y + brickHeight / 2);
+        }
+      });
+    });
+  }
+
+  // Desenhar bola rosa
+  function drawBall() {
+    ctx.beginPath();
+    ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI*2);
+    ctx.fillStyle = "#ff69b4";
+    ctx.fill();
+    ctx.closePath();
+  }
+
+  // Desenhar barra azul clara
+  function drawPaddle() {
+    ctx.fillStyle = "#87CEFA";
+    ctx.fillRect(paddleX, canvas.height - paddleHeight - 10, paddleWidth, paddleHeight);
+    ctx.strokeStyle = "#000";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(paddleX, canvas.height - paddleHeight - 10, paddleWidth, paddleHeight);
+  }
+
+  // Detectar colisão bola com tijolos
+  function collisionDetection() {
+    bricks.forEach((row) => {
+      row.forEach(b => {
+        if(b.status === 1) {
+          if(ball.x > b.x && ball.x < b.x + brickWidth && ball.y > b.y && ball.y < b.y + brickHeight) {
+            ball.dy = -ball.dy;
+            b.status = 0;
+            score++;
+            scoreSpan.textContent = score;
+
+            // Mostrar +1
+            showFloatingText("+1", b.x + brickWidth/2, b.y);
+
+            // A cada 5 pontos mostrar elogio fofo
+            if(score % 5 === 0) {
+              const idx = ((score/5) - 1) % praises.length;
+              showFloatingText(praises[idx], b.x + brickWidth/2, b.y - 20, true);
+            }
+
+            // Atualizar recorde
+            if(score > highScore) {
+              highScore = score;
+              localStorage.setItem("highScoreAna", highScore);
+              highScoreSpan.textContent = highScore;
+            }
+
+            // Se zerou todos os tijolos, final feliz!
+            if(score === totalBricks) {
+              finalMsgDiv.style.display = "block";
+              clearInterval(intervalId);
+            }
+          }
+        }
+      });
+    });
+  }
+
+  // Atualiza o jogo a cada frame
+  function draw() {
+    drawBackground();
+    drawMesaAzul();
+    drawBricks();
+    drawBall();
+    drawPaddle();
+    collisionDetection();
+
+    // Movimento bola
+    ball.x += ball.dx;
+    ball.y += ball.dy;
+
+    // Rebater nas bordas laterais
+    if(ball.x + ball.dx > canvas.width - ball.radius || ball.x + ball.dx < ball.radius) {
+      ball.dx = -ball.dx;
+    }
+    // Rebater no teto
+    if(ball.y + ball.dy < ball.radius) {
+      ball.dy = -ball.dy;
+    }
+    // Rebater na barra
+    else if(ball.y + ball.dy > canvas.height - ball.radius - 10 - paddleHeight) {
+      if(ball.x > paddleX && ball.x < paddleX + paddleWidth) {
+        ball.dy = -ball.dy;
+
+        // Para ficar mais legal, aumenta a velocidade um pouco em cada rebote na barra:
+        if(ball.dy > 0) ball.dy += 0.1;
+        else ball.dy -= 0.1;
+        if(ball.dx > 0) ball.dx += 0.1;
+        else ball.dx -= 0.1;
+
+      } else if(ball.y + ball.dy > canvas.height - ball.radius) {
+        // Bola caiu - resetar jogo
+        resetGame();
       }
     }
+  }
 
-    // Desenha mesa azul na base
-    function drawMesaAzul() {
-      ctx.fillStyle = "#87CEFA";
-      ctx.fillRect(0, canvas.height - 60, canvas.width, 60);
+  // Reseta jogo se bola cair
+  function resetGame() {
+    score = 0;
+    scoreSpan.textContent = score;
+    paddleX = (canvas.width - paddleWidth) / 2;
+    ball.x = canvas.width / 2;
+    ball.y = canvas.height - 60;
+    ball.dx = 3;
+    ball.dy = -3;
+    createBricks();
+    finalMsgDiv.style.display = "none";
+  }
+
+  // Controle da barra pelo mouse
+  document.addEventListener("mousemove", (e) => {
+    const relativeX = e.clientX - canvas.offsetLeft;
+    if(relativeX > 0 && relativeX < canvas.width) {
+      paddleX = relativeX - paddleWidth / 2;
+      if(paddleX < 0) paddleX = 0;
+      else if(paddleX + paddleWidth > canvas.width) paddleX = canvas.width - paddleWidth;
     }
+  });
 
-    // Desenha tijolos com coração preto dentro
-    function drawBricks() {
-      bricks.forEach((row, r) => {
-        row.forEach((b, c) => {
-          if (b.status === 1) {
-            b.x = c * (brickWidth + brickPadding) + brickOffsetLeft;
-            b.y = r * (brickHeight + brickPadding) + brickOffsetTop;
-            ctx.fillStyle = "#ff69b4";
-            ctx.fillRect(b.x, b.y, brickWidth, brickHeight);
-
-            ctx.fillStyle = "#000";
-            ctx.font = "16px Arial";
-            ctx.textBaseline = "middle";
-            ctx.textAlign = "center";
-            ctx.fillText("❤️", b.x + brickWidth / 2, b.y + brickHeight / 2);
-          }
-        });
-      });
+  // Controle da barra por toque
+  document.addEventListener("touchmove", (e) => {
+    let touch = e.touches[0];
+    const relativeX = touch.clientX - canvas.offsetLeft;
+    if(relativeX > 0 && relativeX < canvas.width) {
+      paddleX = relativeX - paddleWidth / 2;
+      if(paddleX < 0) paddleX = 0;
+      else if(paddleX + paddleWidth > canvas.width) paddleX = canvas.width - paddleWidth;
     }
+  }, {passive:true});
 
-    // Desenha bolas rosas
-    function drawBalls() {
-      balls.forEach(ball => {
-        ctx.beginPath();
-        ctx.arc(ball.x, ball.y, ballRadius, 0, Math.PI * 2);
-        ctx.fillStyle = "#ff69b4";
-        ctx.fill();
-        ctx.closePath();
-      });
-    }
+  // Loop do jogo
+  const intervalId = setInterval(draw, 16); // ~60fps
 
-    // Desenha barra azul clara com borda preta
-    function drawPaddle() {
-      ctx.fillStyle = "#87CEFA";
-      ctx.fillRect(paddleX, canvas.height - paddleHeight - 10, paddleWidth, paddleHeight);
-      ctx.strokeStyle = "#000";
-      ctx.lineWidth = 2;
-      ctx.strokeRect(paddleX, canvas.height - paddleHeight - 10, paddleWidth, paddleHeight);
-    }
-
-    // Detecta colisão entre bolas e tijolos
-    function collisionDetection() {
-      balls.forEach(ball => {
-        bricks.forEach(row => {
-          row.forEach(b => {
-            if (b.status === 1) {
-              if (
-                ball.x > b.x &&
-                ball.x < b.x + brickWidth &&
-                ball.y > b.y &&
-                ball.y < b.y + brickHeight
-              ) {
-                ball.dy = -ball.dy;
-                b.status = 0;
-                score++;
-                scoreSpan.textContent = score;
-
-                // Mostra +1 subindo no local do tijolo
-                showFloatingText("+1", b.x + brickWidth / 2, b.y, false);
-
-                // A cada múltiplo de 5, mostra elogio fofo
-                if (score % 5 === 0) {
-                  const praise = praises[(score/5 - 1) % praises.length];
-                  showFloatingText(praise, b.x + brickWidth / 2, b.y - 20, true);
-                }
-
-                if(score > high
+</script>
+</body>
+</html>
